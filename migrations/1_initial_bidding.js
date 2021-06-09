@@ -1,5 +1,5 @@
-const Bidding = artifacts.require("Bidding");
+const IBidC = artifacts.require("IBidC");
 
 module.exports = function (deployer) {
-  deployer.deploy(Bidding);
+  deployer.deploy(IBidC);
 };
