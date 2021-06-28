@@ -75,5 +75,4 @@ contract Bidding {
     function currentBalance() public view returns(uint256){
         return _token.balanceOf(msg.sender);
     }
-
 }
