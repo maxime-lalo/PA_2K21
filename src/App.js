@@ -3,7 +3,7 @@
 import React from 'react';
 import './App.css';
 import Web3 from 'web3';
-import { IBidCAbi, Bidding } from './abi/abis';
+import { IBidCAbi, BiddingAbi, IbidCNFTAbi } from './abi/abis';
 
 class App extends React.Component {
   state = {account: ''}
