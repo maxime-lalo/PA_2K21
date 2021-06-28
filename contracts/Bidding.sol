@@ -5,9 +5,11 @@ import "./IBidCNFT.sol";
 
 contract Bidding {
     address public owner = msg.sender;
+    address public burnAddr = 0x0000000000000000000000000000000000000000;
 
     IBidC private _token;
     IBidCNFT private _NFT;
+
 
     struct Bid {
         address bidder;
@@ -49,16 +51,28 @@ contract Bidding {
                     }
                 }
 
+                // On vérifie si la personne a déjà enchéri
+                Bid memory alreadyBid = Bid(burnAddr,0);
+                for(uint256 i = 0; i < currentBids.length; i++){
+                    if(currentBids[i].bidder == msg.sender){
+                        alreadyBid = currentBids[i];
+                    }
+                }
+
+                /**
+                 * On vient bloquer la somme le temps de l'enchère, si la personne
+                 * a déjà enchéri, on bloque la différence entre la dernière enchère
+                 * et la nouvelle, sinon on bloque la somme entière
+                 */
+                if (alreadyBid.bidder != burnAddr){
+                    //_token.transfer(owner, (amount - alreadyBid.price));
+                }else{
+                    //_token.transfer(owner, amount);
+                }
+
                 // si l'enchère est valide, on la crée et on la rajoute dans l'array
                 Bid memory newBid = Bid(msg.sender,amount);
                 _bids[nftId].push(newBid);
-
-                // on récupère également la somme de l'enchère pour la bloquer le temps de l'enchère
-                if (msg.sender != owner){
-                    _token.transfer(owner, amount);
-                }else{
-                    _token.transfer(0x9ec29AD24069c34C97544b74b1b72b04aB6687F3, amount);
-                }
                 return true;
             }else{
                 return false;
@@ -70,6 +84,33 @@ contract Bidding {
 
     function viewBids(uint256 nftId) public view returns(Bid[] memory){
         return _bids[nftId];
+    }
+
+    function claimBid(uint256 nftId) public returns(bool) {
+        Bid[] memory currentBids = _bids[nftId];
+
+        // On récupère la dernière entrée, qui est forcément l'enchère la plus haute
+        Bid memory winnerBid = currentBids[currentBids.length-1];
+
+        if (msg.sender == winnerBid.bidder){
+                // On récupère l'adresse de celui qui possède le NFT
+            address nftOwner = _NFT.ownerOf(nftId);
+
+            // On burn le NFT et on transfère l'argent à celui qui a mis l'enchère
+            _NFT.transferFrom(nftOwner, burnAddr, nftId);
+            _token.transferFrom(owner, nftOwner, winnerBid.price);
+
+            // On supprime le vainqueur des enchères pour pouvoir garder uniquement les perdants
+            delete currentBids[currentBids.length-1];
+
+            // On rend les tokens pris aux gens qui ont enchéri mais n'ont pas gagné
+            for(uint256 i = 0; i < currentBids.length; i++){
+                _token.transferFrom(owner, currentBids[i].bidder, currentBids[i].price);
+            }
+            return true;
+        }else{
+            return false;
+        }
     }
 
     function currentBalance() public view returns(uint256){

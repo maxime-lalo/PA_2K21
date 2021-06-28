@@ -9,7 +9,7 @@ contract IBidCNFT is ERC721URIStorage  {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    constructor() ERC721("Bid", "BID") {}
+    constructor() ERC721("IBidCNFT", "BID") {}
 
     function createBid(address player, string memory tokenJSON) public returns (uint256){
         _tokenIds.increment();
