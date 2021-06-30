@@ -10,7 +10,6 @@ contract Bidding {
     IBidC private _token;
     IBidCNFT private _NFT;
 
-
     struct Bid {
         address bidder;
         uint256 price;
@@ -35,51 +34,56 @@ contract Bidding {
         return _NFT.createBid(msg.sender, bidJSON);
     }
 
+    function prepareBid(uint256 amount) public{
+        _token.approve(address(this), amount);
+    }
+
     function addBid(uint256 nftId,uint256 amount) public returns (bool){
-        if(_NFT.exists(nftId)){
-            // Si la personne qui enchérie n'a pas l'argent nécéssaire
-            if(_token.balanceOf(msg.sender) >= amount){
-                /* 
-                 * On vérifie toutes les enchères en cours
-                 * si une est déjà existante a + cher ou au même prix
-                 * on renvoie false
-                 */ 
-                Bid[] memory currentBids = _bids[nftId];
-                for(uint256 i = 0; i < currentBids.length; i++){
-                    if(currentBids[i].price >= amount){
-                        return false;
-                    }
-                }
-
-                // On vérifie si la personne a déjà enchéri
-                Bid memory alreadyBid = Bid(burnAddr,0);
-                for(uint256 i = 0; i < currentBids.length; i++){
-                    if(currentBids[i].bidder == msg.sender){
-                        alreadyBid = currentBids[i];
-                    }
-                }
-
-                /**
-                 * On vient bloquer la somme le temps de l'enchère, si la personne
-                 * a déjà enchéri, on bloque la différence entre la dernière enchère
-                 * et la nouvelle, sinon on bloque la somme entière
-                 */
-                if (alreadyBid.bidder != burnAddr){
-                    //_token.transfer(owner, (amount - alreadyBid.price));
-                }else{
-                    //_token.transfer(owner, amount);
-                }
-
-                // si l'enchère est valide, on la crée et on la rajoute dans l'array
-                Bid memory newBid = Bid(msg.sender,amount);
-                _bids[nftId].push(newBid);
-                return true;
-            }else{
+        // On vérifie que le NFT existe bien
+        require(_NFT.exists(nftId),"The NFT doesn't exists");
+            
+        /* 
+        * On vérifie toutes les enchères en cours
+        * si une est déjà existante a + cher ou au même prix
+        * on renvoie false
+        */ 
+        Bid[] memory currentBids = _bids[nftId];
+        for(uint256 i = 0; i < currentBids.length; i++){
+            if(currentBids[i].price >= amount){
                 return false;
             }
-        }else{
-            return false;
         }
+
+        // On vérifie si la personne a déjà enchéri
+        Bid memory alreadyBid = Bid(burnAddr,0);
+        for(uint256 i = 0; i < currentBids.length; i++){
+            if(currentBids[i].bidder == msg.sender){
+                alreadyBid = currentBids[i];
+            }
+        }
+
+        /**
+        * si la personne a déjà enchéri, on bloque la différence entre la dernière enchère
+        * et la nouvelle, sinon on bloque la somme entière
+        */
+        uint256 lockedAmount = 0;
+        if (alreadyBid.bidder != burnAddr){
+            lockedAmount = (amount - alreadyBid.price);
+        }else{
+            lockedAmount = amount;
+        }
+
+        // Si la personne qui enchérit n'a pas l'argent nécéssaire
+        require(_token.balanceOf(msg.sender) >= lockedAmount,"You don't have the amount you're bidding for");
+
+        // On bloque sur le compte du owner la somme de l'enchère
+        _token.approve(address(this), amount);
+        _token.transferFrom(msg.sender,address(this), lockedAmount);
+
+        // si l'enchère est valide, on la crée et on la rajoute dans l'array
+        Bid memory newBid = Bid(msg.sender,amount);
+        _bids[nftId].push(newBid);
+        return true;
     }
 
     function viewBids(uint256 nftId) public view returns(Bid[] memory){
@@ -92,28 +96,29 @@ contract Bidding {
         // On récupère la dernière entrée, qui est forcément l'enchère la plus haute
         Bid memory winnerBid = currentBids[currentBids.length-1];
 
-        if (msg.sender == winnerBid.bidder){
-                // On récupère l'adresse de celui qui possède le NFT
-            address nftOwner = _NFT.ownerOf(nftId);
+        // On récupère l'adresse de celui qui possède le NFT
+        address nftOwner = _NFT.ownerOf(nftId);
+        require((msg.sender == winnerBid.bidder || msg.sender == nftOwner),"You must be the owner of the bid or the winner to claim it");
+        // On burn le NFT et on transfère l'argent à celui qui a mis l'enchère
+        _NFT.transferFrom(nftOwner, burnAddr, nftId);
+        _token.transferFrom(owner, nftOwner, winnerBid.price);
 
-            // On burn le NFT et on transfère l'argent à celui qui a mis l'enchère
-            _NFT.transferFrom(nftOwner, burnAddr, nftId);
-            _token.transferFrom(owner, nftOwner, winnerBid.price);
+        // On supprime le vainqueur des enchères pour pouvoir garder uniquement les perdants
+        delete currentBids[currentBids.length-1];
 
-            // On supprime le vainqueur des enchères pour pouvoir garder uniquement les perdants
-            delete currentBids[currentBids.length-1];
-
-            // On rend les tokens pris aux gens qui ont enchéri mais n'ont pas gagné
-            for(uint256 i = 0; i < currentBids.length; i++){
-                _token.transferFrom(owner, currentBids[i].bidder, currentBids[i].price);
-            }
-            return true;
-        }else{
-            return false;
+        // On rend les tokens pris aux gens qui ont enchéri mais n'ont pas gagné
+        for(uint256 i = 0; i < currentBids.length; i++){
+            _token.transferFrom(owner, currentBids[i].bidder, currentBids[i].price);
         }
+        return true;
+        
     }
 
     function currentBalance() public view returns(uint256){
         return _token.balanceOf(msg.sender);
+    }
+
+    function getAllowance() public view returns(uint256){
+        return _token.allowance(address(this), msg.sender);
     }
 }

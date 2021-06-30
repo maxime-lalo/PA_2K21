@@ -9,4 +9,5 @@ module.exports = async function (deployer) {
   const nft = await IBidCNFT.deployed();
 
   await deployer.deploy(Bidding,token.address,nft.address);
+  const bidding = await Bidding.deployed();
 };
