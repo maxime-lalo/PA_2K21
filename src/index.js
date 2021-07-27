@@ -5,12 +5,12 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Header from './header/Header';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <Header />
-  </React.StrictMode>,
-  document.getElementById('header')
-);
+// ReactDOM.render(
+//   <React.StrictMode>
+//     <Header />
+//   </React.StrictMode>,
+//   document.getElementById('header')
+// );
 
 ReactDOM.render(
   <React.StrictMode>

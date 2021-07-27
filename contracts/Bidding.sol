@@ -34,10 +34,6 @@ contract Bidding {
         return _NFT.createBid(msg.sender, bidJSON);
     }
 
-    function prepareBid(uint256 amount) public{
-        _token.approve(address(this), amount);
-    }
-
     function addBid(uint256 nftId,uint256 amount) public returns (bool){
         // On vérifie que le NFT existe bien
         require(_NFT.exists(nftId),"The NFT doesn't exists");
