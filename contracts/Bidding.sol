@@ -94,7 +94,7 @@ contract Bidding {
 
         // On récupère l'adresse de celui qui possède le NFT
         address nftOwner = _NFT.ownerOf(nftId);
-        require((msg.sender == winnerBid.bidder || msg.sender == nftOwner),"You must be the owner of the bid or the winner to claim it");
+        require((msg.sender == nftOwner),"You must be the owner of the bid to claim it");
         // On burn le NFT et on transfère l'argent à celui qui a mis l'enchère
         _NFT.transferFrom(nftOwner, burnAddr, nftId);
         _token.transferFrom(owner, nftOwner, winnerBid.price);

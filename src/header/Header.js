@@ -3,6 +3,11 @@ import './Header.css';
 import logo from '../logo.png';
 
 class Header extends React.Component{
+  numberWithSpaces(x) {
+    var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return parts.join(".");
+  }
   
   render() {
     return (
@@ -21,15 +26,13 @@ class Header extends React.Component{
                   <a className="nav-link active" aria-current="page" href="/">Home</a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="/">Features</a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="/">Pricing</a>
+                  <a className="nav-link active" aria-current="page" href="/create-bid">Créer une enchère</a>
                 </li>
               </ul>
               <span className="navbar-text" id="ticker"></span>
             </div>
-            <div className=""><b>Your account: {this.props.account}</b></div>
+            <div className=""><b>Your balance: {this.numberWithSpaces(this.props.appProps.balance)} IBIDC | </b></div>
+            <div className=""><b>&nbsp;Your account: {this.props.appProps.account}</b></div>
           </div>
         </nav>
       </div>
