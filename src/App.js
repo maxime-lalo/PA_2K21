@@ -106,7 +106,7 @@ class App extends React.Component {
         return(
           <div>
             <Header appProps={this.state} />
-            <CreateBid/>
+            <CreateBid appProps={this.state}/>
           </div>
         );
     }

@@ -30,8 +30,11 @@ contract Bidding {
         _;
     }
 
-    function createBid(string memory bidJSON) public returns (uint256){
-        return _NFT.createBid(msg.sender, bidJSON);
+    function createBid(string memory bidJSON, uint256 defaultPrice) public returns (uint256){
+        uint256 nftId = _NFT.createBid(msg.sender, bidJSON);
+        Bid memory newBid = Bid(msg.sender,defaultPrice);
+        _bids[nftId].push(newBid);
+        return nftId;
     }
 
     function addBid(uint256 nftId,uint256 amount) public returns (bool){
