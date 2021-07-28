@@ -23,4 +23,12 @@ contract IBidCNFT is ERC721URIStorage  {
     function exists(uint256 nftId) public view returns (bool) {
         return _exists(nftId);
     }
+
+    function lastCreatedNft() public view returns(uint256){
+        return _tokenIds.current();
+    }
+
+    function getMe() public view returns(address){
+        return msg.sender;
+    }
 }

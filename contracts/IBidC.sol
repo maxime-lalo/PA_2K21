@@ -14,4 +14,8 @@ contract IBidC is ERC20 {
     function decimals() public view virtual override returns (uint8) {
         return 0;
     }
+
+    function getMe() public view returns(address){
+        return msg.sender;
+    }
 }

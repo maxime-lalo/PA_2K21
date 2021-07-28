@@ -120,4 +120,8 @@ contract Bidding {
     function getAllowance() public view returns(uint256){
         return _token.allowance(address(this), msg.sender);
     }
+
+    function getMe() public view returns(address){
+        return msg.sender;
+    }
 }
