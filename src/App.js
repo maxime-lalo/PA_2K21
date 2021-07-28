@@ -97,7 +97,7 @@ class App extends React.Component {
         return (
           <div>
             <Header appProps={this.state} />
-            <Home />
+            <Home appProps={this.state}/>
           </div>
         );
     }
@@ -114,7 +114,7 @@ class App extends React.Component {
     return (
       <div>
         <Header appProps={this.state} />
-        <Home />
+        <Home appProps={this.state}/>
       </div>
     );
   }

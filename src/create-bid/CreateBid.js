@@ -45,7 +45,7 @@ class CreateBid extends React.Component{
 			title: "NFT créé",
 			text: `Le NFT avec l'identifiant ${nftId} a bien été créé`,
 			icon: 'success'
-		})
+		});
 	}
 }
 
