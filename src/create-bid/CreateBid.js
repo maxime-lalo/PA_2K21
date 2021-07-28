@@ -43,7 +43,7 @@ class CreateBid extends React.Component{
 		let nftId = await this.props.appProps.ibidcnft.methods.lastCreatedNft().call();
 		MySwal.fire({
 			title: "NFT créé",
-			text: `Le NFT a l'identifiant ${nftId} a bien été créé`,
+			text: `Le NFT avec l'identifiant ${nftId} a bien été créé`,
 			icon: 'success'
 		})
 	}
