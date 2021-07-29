@@ -30,8 +30,11 @@ class Bid extends React.Component{
                     <h3 className='text-center'>{this.state.json.name}</h3>
                     <p className='text-center'>{this.state.json.description}</p>
                     <hr/>
-                    <p className='text-center'>{this.state.owner}</p>
-                    <p className='text-left'>Base price | {parseInt(this.state.json.basePrice)} IBC</p>
+                    <p className='text-left'>
+                        {this.state.owner}
+                        <br/>
+                        Base price | {parseInt(this.state.json.basePrice)} IBC
+                    </p>
                     <hr/>
                     <p className='text-left'>
                         {this.state.price} IBC enchéris par
