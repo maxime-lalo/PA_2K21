@@ -3,9 +3,15 @@ import './Bid.css';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
-const MySwal = withReactContent(Swal)
+const MySwal = withReactContent(Swal);
 
 class Bid extends React.Component{
+    numberWithSpaces(x){
+        var parts = x.toString().split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        return parts.join(".");
+    }
+
     constructor(props) {
         super(props);
         this.bid = this.bid.bind(this);
@@ -37,12 +43,12 @@ class Bid extends React.Component{
                     </p>
                     <hr/>
                     <p className='text-left'>
-                        {this.state.price} IBC enchéris par
+                        {this.numberWithSpaces(this.state.price)} IBC enchéris par
                         <br/>
                         {this.state.bidder}
                     </p>
                     <hr/>
-                    <input type='number' min-val={(parseInt(this.state.price) + 1)} value={(parseInt(this.state.price)+1)} name='bid' className='form-control mb-2' />
+                    <input type='number' min-val={(parseInt(this.state.price) + 1)} name='bid' className='form-control mb-2' />
                     <button type="submit" className='btn btn-primary mb-2'>Enchérir</button>
                 </form>
             </div>
@@ -85,20 +91,28 @@ class Bid extends React.Component{
         e.preventDefault();
         const formData = new FormData(e.target);
 		const data = Object.fromEntries(formData.entries());
-        var tx = {from: this.props.appProps.account};
-        // On approuve d'abord la transaction de nos IBIDC vers le contrat
-		await this.props.appProps.ibidc.methods.approve(this.props.appProps.bidding._address,data.bid).send(this.props.appProps.account,1000,tx);
-		MySwal.fire({
-			title: "Transaction",
-			text: `La transaction a bien été approuvée`,
-			icon: 'success'
-		});
-        await this.props.appProps.bidding.methods.addBid(this.props.id,data.bid).send(this.props.appProps.account,1000,tx);
-		MySwal.fire({
-			title: "Enchère ajoutée",
-			text: `L'enchère a bien été prise en compte`,
-			icon: 'success'
-		});
+        if(data.bid <= this.state.price){
+            MySwal.fire({
+                title: "Erreur",
+                text: `Vous devez enchérir au moins 1 IBC de plus que l'enchère la plus grosse`,
+                icon: 'error'
+            });
+        }else{
+            var tx = {from: this.props.appProps.account};
+            // On approuve d'abord la transaction de nos IBIDC vers le contrat
+            await this.props.appProps.ibidc.methods.approve(this.props.appProps.bidding._address,data.bid).send(this.props.appProps.account,1000,tx);
+            MySwal.fire({
+                title: "Transaction",
+                text: `La transaction a bien été approuvée`,
+                icon: 'success'
+            });
+            await this.props.appProps.bidding.methods.addBid(this.props.id,data.bid).send(this.props.appProps.account,1000,tx);
+            MySwal.fire({
+                title: "Enchère ajoutée",
+                text: `L'enchère a bien été prise en compte`,
+                icon: 'success'
+            });
+        }
     }
 }
 
