@@ -40,7 +40,10 @@ contract Bidding {
     function addBid(uint256 nftId,uint256 amount) public returns (bool){
         // On vérifie que le NFT existe bien
         require(_NFT.exists(nftId),"The NFT doesn't exists");
-            
+        
+        address nftOwner = _NFT.ownerOf(nftId);
+        require(nftOwner != msg.sender,"You can't bid on your own NFT");
+
         /* 
         * On vérifie toutes les enchères en cours
         * si une est déjà existante a + cher ou au même prix

@@ -1,15 +1,20 @@
 import React from 'react';
-import './Home.css';
+import './MyBids.css';
 import Bid from '../bid/Bid';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
-class Home extends React.Component{
-    constructor(props){
-        super(props);
-        this.state = {
+const MySwal = withReactContent(Swal)
+
+class MyBids extends React.Component{
+	constructor(props) {
+	  super(props);
+		this.myBids = this.myBids.bind(this);
+		this.state = {
             bids: [],
             requestEnded: false
         };
-    }
+	}
 
     componentDidMount(){
         fetch("http://51.83.45.52:8080/bid")
@@ -39,8 +44,21 @@ class Home extends React.Component{
         }else{
             return(<div>Loading...</div>);
         }
-        
     }
+
+	async myBids(e){
+		e.preventDefault();
+		const formData = new FormData(e.target);
+		const data = Object.fromEntries(formData.entries());
+		var tx = {from: this.props.appProps.account};
+		await this.props.appProps.bidding.methods.myBids(JSON.stringify(data),data.basePrice).send(this.props.appProps.account,1000,tx);
+		let nftId = await this.props.appProps.ibidcnft.methods.lastCreatedNft().call();
+		MySwal.fire({
+			title: "NFT créé",
+			text: `Le NFT avec l'identifiant ${nftId} a bien été créé`,
+			icon: 'success'
+		});
+	}
 }
 
-export default Home;
+export default MyBids;

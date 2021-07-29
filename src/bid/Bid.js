@@ -58,32 +58,34 @@ class Bid extends React.Component{
     componentDidMount(){
         setTimeout(() => {
             this.getBid();
-        },3000) 
+        },3000)
     }
 
     async getBid(){
-        let exists = await this.props.appProps.ibidcnft.methods.exists(this.props.id).call();
-        if(exists){
-            let owner = await this.props.appProps.ibidcnft.methods.ownerOf(this.props.id).call();
-            let json = await this.props.appProps.ibidcnft.methods.tokenURI(this.props.id).call();
-            json = JSON.parse(json);
+        if (this.props.appProps.isLoading === true) {
+            let exists = await this.props.appProps.ibidcnft.methods.exists(this.props.id).call();
+            if(exists){
+                let owner = await this.props.appProps.ibidcnft.methods.ownerOf(this.props.id).call();
+                let json = await this.props.appProps.ibidcnft.methods.tokenURI(this.props.id).call();
+                json = JSON.parse(json);
 
-            let bidder = "0x0";
-            let max = 0;
+                let bidder = "0x0";
+                let max = 0;
 
-            let data = await this.props.appProps.bidding.methods.viewBids(this.props.id).call();
-            for(let i = 0; i < data.length; i++){
-                if(parseInt(data[i].price) > max){
-                    max = parseInt(data[i].price);
-                    bidder = data[i].bidder;
+                let data = await this.props.appProps.bidding.methods.viewBids(this.props.id).call();
+                for(let i = 0; i < data.length; i++){
+                    if(parseInt(data[i].price) > max){
+                        max = parseInt(data[i].price);
+                        bidder = data[i].bidder;
+                    }
                 }
+                this.setState({
+                    price: max,
+                    bidder,
+                    owner,
+                    json
+                });
             }
-            this.setState({
-                price: max,
-                bidder,
-                owner,
-                json
-            });
         }
     }
 

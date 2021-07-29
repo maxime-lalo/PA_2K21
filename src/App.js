@@ -5,6 +5,7 @@ import './App.css';
 import Web3 from 'web3';
 import Header from './header/Header';
 import CreateBid from './create-bid/CreateBid';
+import MyBids from './my-bids/MyBids';
 import Home from './home/Home';
 import IBidC from './abi/IBidC.json';
 import Bidding from './abi/Bidding.json';
@@ -12,11 +13,32 @@ import IBidCNFT from './abi/IBidCNFT.json';
 
 class App extends React.Component {
 
+  constructor(props) {
+    super(props)
+    this.state = {
+      isLoading: false,
+      account: '0x0',
+      balance: 0
+    }
+  }
+
   async componentWillMount() {
     await this.loadWeb3()
     await this.loadBlockChain()
   }
 
+  async loadWeb3() {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum)
+      await window.ethereum.enable()
+      this.state.isLoading = true;
+    // } else if (window.web3) {
+    //   window.web3 = new Web3(window.web3.currentProvider)
+    } else {
+      window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+    }
+  }
+  
   async loadBlockChain() {
     const web3 = new Web3(Web3.givenProvider || Web3.providers.HttpProvider('https://ropsten.infura.io/v3/16cac94d5d4a43f3a79b7b0923aa0d0d'))
     
@@ -58,25 +80,6 @@ class App extends React.Component {
     }
   }
 
-  async loadWeb3() {
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum)
-      await window.ethereum.enable()
-    } else if (window.web3) {
-      window.web3 = new Web3(window.web3.currentProvider)
-    } else {
-      window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
-    }
-  }
-
-  constructor(props) {
-    super(props)
-    this.state = {
-      account: '0x0',
-      balance: 0
-    }
-  }
-
   render() {
     // let content
 
@@ -95,10 +98,10 @@ class App extends React.Component {
     // }
     if(window.location.pathname === '/'){
         return (
-          <div>
+        <div>
             <Header appProps={this.state} />
             <Home appProps={this.state}/>
-          </div>
+        </div>
         );
     }
 
@@ -107,6 +110,15 @@ class App extends React.Component {
           <div>
             <Header appProps={this.state} />
             <CreateBid appProps={this.state}/>
+          </div>
+        );
+    }
+
+    if(window.location.pathname === '/my-bids'){
+        return(
+          <div>
+            <Header appProps={this.state} />
+            <MyBids appProps={this.state}/>
           </div>
         );
     }

@@ -28,6 +28,9 @@ class Header extends React.Component{
                 <li className="nav-item">
                   <a className="nav-link active" aria-current="page" href="/create-bid">Créer une enchère</a>
                 </li>
+                <li className="nav-item">
+                  <a className="nav-link active" aria-current="page" href="/my-bids">Mes enchères</a>
+                </li>
               </ul>
               <span className="navbar-text" id="ticker"></span>
             </div>
