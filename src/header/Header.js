@@ -31,7 +31,7 @@ class Header extends React.Component{
               </ul>
               <span className="navbar-text" id="ticker"></span>
             </div>
-            <div className=""><b>Your balance: {this.numberWithSpaces(this.props.appProps.balance)} IBIDC | </b></div>
+            <div className=""><b>Your balance: {this.numberWithSpaces(this.props.appProps.balance)} IBC | </b></div>
             <div className=""><b>&nbsp;Your account: {this.props.appProps.account}</b></div>
           </div>
         </nav>

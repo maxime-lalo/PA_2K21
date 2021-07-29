@@ -9,11 +9,17 @@ class Bid extends React.Component{
     constructor(props) {
         super(props);
         this.bid = this.bid.bind(this);
-        this.getLastBid = this.getLastBid.bind(this);
+        this.getBid = this.getBid.bind(this);
 
         this.state = {
             price: 0,
-            bidder: "0x0"
+            bidder: "0x0",
+            json: {
+                name: 'Loading...',
+                description: 'Loading...',
+                basePrice: 0
+            },
+            owner: "0x0"
           }
     }
 
@@ -21,16 +27,19 @@ class Bid extends React.Component{
         return(
             <div className='col-3 bid'>
                 <form onSubmit={this.bid}>
-                    <h3 className='text-center'>{this.props.title}</h3>
-                    <p className='text-center'>Description de l'enchère</p>
+                    <h3 className='text-center'>{this.state.json.name}</h3>
+                    <p className='text-center'>{this.state.json.description}</p>
+                    <hr/>
+                    <p className='text-center'>{this.state.owner}</p>
+                    <p className='text-left'>Base price | {parseInt(this.state.json.basePrice)} IBC</p>
                     <hr/>
                     <p className='text-left'>
-                        {this.state.price} IBIDC enchéris par
+                        {this.state.price} IBC enchéris par
                         <br/>
                         {this.state.bidder}
                     </p>
                     <hr/>
-                    <input type='number' min-val={(this.state.price+1)} defaultValue={(this.state.price+1)} name='bid' className='form-control mb-2' />
+                    <input type='number' min-val={(parseInt(this.state.price) + 1)} value={(parseInt(this.state.price)+1)} name='bid' className='form-control mb-2' />
                     <button type="submit" className='btn btn-primary mb-2'>Enchérir</button>
                 </form>
             </div>
@@ -39,25 +48,34 @@ class Bid extends React.Component{
 
     componentDidMount(){
         setTimeout(() => {
-            this.getLastBid();
+            this.getBid();
         },3000) 
     }
 
-    getLastBid(){
-        let bidder = "0x0";
-        let max = 0;
-        this.props.appProps.bidding.methods.viewBids(this.props.id).call().then( (data) => {
+    async getBid(){
+        let exists = await this.props.appProps.ibidcnft.methods.exists(this.props.id).call();
+        if(exists){
+            let owner = await this.props.appProps.ibidcnft.methods.ownerOf(this.props.id).call();
+            let json = await this.props.appProps.ibidcnft.methods.tokenURI(this.props.id).call();
+            json = JSON.parse(json);
+
+            let bidder = "0x0";
+            let max = 0;
+
+            let data = await this.props.appProps.bidding.methods.viewBids(this.props.id).call();
             for(let i = 0; i < data.length; i++){
-                if(data[i].price > max){
-                    max = data[i].price;
+                if(parseInt(data[i].price) > max){
+                    max = parseInt(data[i].price);
                     bidder = data[i].bidder;
                 }
             }
             this.setState({
                 price: max,
-                bidder: bidder
+                bidder,
+                owner,
+                json
             });
-        });
+        }
     }
 
     async bid(e){

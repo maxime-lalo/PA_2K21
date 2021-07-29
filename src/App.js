@@ -76,10 +76,10 @@ class App extends React.Component {
       balance: 0
     }
   }
-  
+
   render() {
     // let content
-    
+
     // if(this.state.loading) {
     //   content = <p id="loader" className="text-center">Loading...</p>
     // } else {
