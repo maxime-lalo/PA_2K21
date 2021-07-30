@@ -33,3 +33,5 @@ yarn-error.log*
 selenium-debug.log
 /dist/
 package-lock.json
+
+config.js
