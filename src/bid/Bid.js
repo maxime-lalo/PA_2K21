@@ -2,6 +2,8 @@ import React from 'react';
 import './Bid.css';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { Default } from 'react-spinners-css';
+
 
 const MySwal = withReactContent(Swal);
 
@@ -31,7 +33,11 @@ class Bid extends React.Component{
 
     render(){
         if(this.props.appProps.bidding === undefined){
-            return(<div>Loading...</div>);
+            return(
+                <div className='d-flex justify-content-center align-items-center loader'>
+                    <Default color="#659DBD" size={200} />
+                </div>
+            );
         }
 
         return(
