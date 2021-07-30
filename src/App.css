@@ -19,3 +19,7 @@ body{
 .App-link {
   color: #61dafb;
 }
+
+.loader{
+  height: 80vh;
+}

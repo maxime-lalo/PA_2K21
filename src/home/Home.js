@@ -1,6 +1,7 @@
 import React from 'react';
 import './Home.css';
 import Bid from '../bid/Bid';
+import { Default } from 'react-spinners-css';
 
 class Home extends React.Component{
     constructor(props){
@@ -29,15 +30,30 @@ class Home extends React.Component{
         if(requestEnded){
             let bidsToDisplay = [];
             for(var i = 0; i < bids.length; i++){
-                bidsToDisplay.push(<Bid appProps={this.props.appProps} key={i} id={bids[i].id} title={"Enchère " + bids[i].id}/>);
+                if(bids[i].active === true){
+                    bidsToDisplay.push(<Bid appProps={this.props.appProps} key={i} id={bids[i].id} title={"Enchère " + bids[i].id}/>);
+                }
             }
-            return (
-                <div className='row justify-content-center'>
-                    {bidsToDisplay}
+            if(bidsToDisplay.length === 0){
+                return (
+                    <div className='row justify-content-center'>
+                        <p className='text-center'>Aucune enchère en cours</p>
+                        <p className='text-center'><a href='/create-bid'>Créer la mienne !</a></p>
+                    </div>
+                );
+            }else{
+                return (
+                    <div className='row justify-content-center'>
+                        {bidsToDisplay}
+                    </div>
+                );
+            }
+        }else{
+            return(
+                <div className='d-flex justify-content-center align-items-center loader'>
+                    <Default color="#659DBD" size={200} />
                 </div>
             );
-        }else{
-            return(<div>Loading...</div>);
         }
         
     }

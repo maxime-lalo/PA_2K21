@@ -22,7 +22,7 @@ class App extends React.Component {
     }
   }
 
-  async componentWillMount() {
+  async componentDidMount() {
     await this.loadWeb3()
     await this.loadBlockChain()
   }

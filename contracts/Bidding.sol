@@ -92,25 +92,25 @@ contract Bidding {
         return _bids[nftId];
     }
 
+
     function claimBid(uint256 nftId) public returns(bool) {
-        Bid[] memory currentBids = _bids[nftId];
-
-        // On récupère la dernière entrée, qui est forcément l'enchère la plus haute
-        Bid memory winnerBid = currentBids[currentBids.length-1];
-
         // On récupère l'adresse de celui qui possède le NFT
         address nftOwner = _NFT.ownerOf(nftId);
         require((msg.sender == nftOwner),"You must be the owner of the bid to claim it");
+
+        Bid[] memory currentBids = _bids[nftId];
+        // On récupère la dernière entrée, qui est forcément l'enchère la plus haute
+        Bid memory winnerBid = currentBids[currentBids.length-1];
+
         // On burn le NFT et on transfère l'argent à celui qui a mis l'enchère
-        _NFT.transferFrom(nftOwner, burnAddr, nftId);
-        _token.transferFrom(owner, nftOwner, winnerBid.price);
+        _NFT.transferFrom(nftOwner, address(this), nftId);
+        _token.transfer(nftOwner, winnerBid.price);
 
-        // On supprime le vainqueur des enchères pour pouvoir garder uniquement les perdants
-        delete currentBids[currentBids.length-1];
-
-        // On rend les tokens pris aux gens qui ont enchéri mais n'ont pas gagné
-        for(uint256 i = 0; i < currentBids.length; i++){
-            _token.transferFrom(owner, currentBids[i].bidder, currentBids[i].price);
+        // On rend les tokens pris aux gens qui ont enchéri mais n'ont pas gagné (d'ou le .length -1)
+        for(uint256 i = 0; i < (currentBids.length-1); i++){
+            if(currentBids[i].bidder != nftOwner){
+                _token.transfer(currentBids[i].bidder, currentBids[i].price);
+            }
         }
         return true;
         

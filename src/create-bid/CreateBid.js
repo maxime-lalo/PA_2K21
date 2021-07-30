@@ -41,6 +41,20 @@ class CreateBid extends React.Component{
 		var tx = {from: this.props.appProps.account};
 		await this.props.appProps.bidding.methods.createBid(JSON.stringify(data),data.basePrice).send(this.props.appProps.account,1000,tx);
 		let nftId = await this.props.appProps.ibidcnft.methods.lastCreatedNft().call();
+		
+		const requestOptions = {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				"id": nftId,
+				"creator": this.props.appProps.account,
+				"active": true
+			})
+		};
+		fetch('http://51.83.45.52:8080/bid', requestOptions)
+			.then(response => response.json())
+			.then( (data) => { console.log(data) });
+	
 		MySwal.fire({
 			title: "NFT créé",
 			text: `Le NFT avec l'identifiant ${nftId} a bien été créé`,
