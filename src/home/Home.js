@@ -2,7 +2,6 @@ import React from 'react';
 import './Home.css';
 import Bid from '../bid/Bid';
 import { Default } from 'react-spinners-css';
-require('dotenv').config()
 
 class Home extends React.Component{
     constructor(props){
@@ -14,7 +13,8 @@ class Home extends React.Component{
     }
 
     componentDidMount(){
-        fetch(process.env.API_BASE + "/bid")
+        console.log(process.env);
+        fetch(process.env.REACT_APP_API_BASE + "/bid")
         .then(res => res.json())
         .then(
           (result) => {

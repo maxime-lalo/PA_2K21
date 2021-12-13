@@ -13,7 +13,7 @@ class MyBids extends React.Component{
 	}
 
     getMyBids(){
-        fetch(process.env.API_BASE + "/bid" + this.props.appProps.account)
+        fetch(process.env.REACT_APP_API_BASE + "/bid" + this.props.appProps.account)
         .then(res => res.json())
         .then(
           (result) => {

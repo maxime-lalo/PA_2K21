@@ -168,7 +168,7 @@ class Bid extends React.Component{
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: this.props.id })
             };
-            fetch(process.env.API_BASE + "/bid",requestOptions)
+            fetch(process.env.REACT_APP_API_BASE + "/bid",requestOptions)
             .then(res => res.json())
             .then(
             (result) => {

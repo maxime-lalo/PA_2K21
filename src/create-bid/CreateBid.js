@@ -51,7 +51,7 @@ class CreateBid extends React.Component{
 				"active": true
 			})
 		};
-		fetch(process.env.API_BASE + '/bid', requestOptions)
+		fetch(process.env.REACT_APP_API_BASE + '/bid', requestOptions)
 			.then(response => response.json())
 			.then( (data) => { console.log(data) });
 	
