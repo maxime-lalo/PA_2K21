@@ -2,6 +2,7 @@ import React from 'react';
 import './Home.css';
 import Bid from '../bid/Bid';
 import { Default } from 'react-spinners-css';
+require('dotenv').config()
 
 class Home extends React.Component{
     constructor(props){
@@ -13,7 +14,7 @@ class Home extends React.Component{
     }
 
     componentDidMount(){
-        fetch("http://51.83.45.52:8080/bid")
+        fetch(process.env.API_BASE + "/bid")
         .then(res => res.json())
         .then(
           (result) => {
@@ -22,7 +23,9 @@ class Home extends React.Component{
                 requestEnded: true
             });
           }
-        )
+        ).catch( (err) => {
+            console.log(err);
+        })
     }
 
     render(){

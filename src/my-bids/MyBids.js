@@ -2,7 +2,7 @@ import React from 'react';
 import './MyBids.css';
 import Bid from '../bid/Bid';
 import { Default } from 'react-spinners-css';
-
+require('dotenv').config()
 class MyBids extends React.Component{
 	constructor(props) {
 	  super(props);
@@ -13,7 +13,7 @@ class MyBids extends React.Component{
 	}
 
     getMyBids(){
-        fetch("http://51.83.45.52:8080/bid/" + this.props.appProps.account)
+        fetch(process.env.API_BASE + "/bid" + this.props.appProps.account)
         .then(res => res.json())
         .then(
           (result) => {
