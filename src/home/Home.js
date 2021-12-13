@@ -22,7 +22,9 @@ class Home extends React.Component{
                 requestEnded: true
             });
           }
-        )
+        ).catch( (err) => {
+            console.log(err);
+        })
     }
 
     render(){
